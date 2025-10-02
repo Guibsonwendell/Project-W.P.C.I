@@ -375,7 +375,7 @@ nav ul li a:hover {
  
 textarea.form-control {
     min-height: 150px;
-    resize: vertical;
+    resize: none;
 }
  
 .btn-submit {
