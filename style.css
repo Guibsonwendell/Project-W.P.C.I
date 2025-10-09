@@ -3,7 +3,7 @@
     --secondary-color: #D35400;
     --background-color: #F5F5F5;
     --text-color: #333333;
-    --light-color: #FFFFFF;
+    --light-color: #fefefe;
 }
  
 * {
@@ -43,7 +43,7 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: var(--secondary-color);
+    background-color: var(--light-color);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     transition: all 0.3s ease;
