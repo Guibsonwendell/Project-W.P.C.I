@@ -1,12 +1,15 @@
 (function(){
 'use strict';
 
+/* ---------- CONFIGURAÇÃO DO FORMSUBMIT ---------- */
+const FORMSUBMIT_EMAIL = "guibsonnegreiros@gmail.com"; // ← COLOQUE SEU E-MAIL AQUI
+
 /* ---- HEADER SCROLL ---- */
 const header = document.getElementById('main-header');
 window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 50);
 }, {passive:true});
-header.classList.add('scrolled'); // sempre com fundo (garante leitura)
+header.classList.add('scrolled');
 
 /* ---- MENU MOBILE ---- */
 const toggle = document.getElementById('menu-toggle');
@@ -42,8 +45,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-// Remoção do código do Hero Slider (não é mais necessário)
-
 /* ---- INTERSECTION OBSERVER (reveal) ---- */
 const revealEls = document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
 const observer = new IntersectionObserver((entries) => {
@@ -69,7 +70,6 @@ function showT(i){
 }
 tDots.forEach((d,i) => d.addEventListener('click', () => showT(i)));
 setInterval(() => showT((tIdx + 1) % tSlides.length), 5500);
-// Swipe
 let tStartX = 0;
 tTrack.addEventListener('touchstart', e => { tStartX = e.changedTouches[0].screenX; }, {passive:true});
 tTrack.addEventListener('touchend', e => {
@@ -108,10 +108,11 @@ document.addEventListener('keydown', e => {
   if(e.key === 'ArrowRight') openLb((lbIdx+1)%lbSrcs.length);
 });
 
-/* ---- FORM VALIDATION ---- */
+/* ---- FORM VALIDATION & ENVIO VIA FORMSUBMIT AJAX ---- */
 const form    = document.getElementById('orcamentoForm');
 const modal   = document.getElementById('modal-success');
 const modalCl = document.getElementById('modal-close');
+
 function validateField(field){
   const val = field.value.trim();
   let ok = val !== '';
@@ -120,27 +121,56 @@ function validateField(field){
   field.classList.toggle('invalid', !ok);
   return ok;
 }
+
 form.querySelectorAll('.form-control[required]').forEach(f => {
   f.addEventListener('blur', () => validateField(f));
   f.addEventListener('input', () => { if(f.classList.contains('invalid')) validateField(f); });
 });
+
 form.addEventListener('submit', function(e){
   e.preventDefault();
+
+  // 1. Validação
   const fields = [...this.querySelectorAll('.form-control[required]')];
   const allOk  = fields.map(validateField).every(Boolean);
-  if(!allOk){ fields.find(f => f.classList.contains('invalid'))?.focus(); return; }
-  // Simula envio
+  if(!allOk){
+    fields.find(f => f.classList.contains('invalid'))?.focus();
+    return;
+  }
+
+  // 2. Feedback do botão
   const btn = this.querySelector('.btn-submit');
   btn.textContent = 'Enviando...';
   btn.disabled = true;
-  setTimeout(() => {
+
+  // 3. Envia via AJAX para o Formsubmit
+  const formData = new FormData(this);
+  fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success === "true" || data.success === true || data.message) {
+      // Sucesso
+      modal.classList.add('open');
+      form.reset();
+      form.querySelectorAll('.form-control').forEach(f => f.classList.remove('valid','invalid'));
+    } else {
+      alert('❌ Ocorreu um erro. Por favor, tente novamente.');
+    }
+  })
+  .catch(error => {
+    console.error('Erro:', error);
+    alert('❌ Falha ao enviar. Verifique sua conexão ou fale conosco pelo WhatsApp.');
+  })
+  .finally(() => {
     btn.textContent = 'Enviar Solicitação de Orçamento';
     btn.disabled = false;
-    form.reset();
-    form.querySelectorAll('.form-control').forEach(f => f.classList.remove('valid','invalid'));
-    modal.classList.add('open');
-  }, 1200);
+  });
 });
+
+/* ---- MODAL CLOSE ---- */
 modalCl.addEventListener('click', () => modal.classList.remove('open'));
 modal.addEventListener('click', e => { if(e.target === modal) modal.classList.remove('open'); });
 

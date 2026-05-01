@@ -35,7 +35,9 @@ body{
   overflow-x:hidden;
   line-height:1.7;
 }
-img{max-width:100%;display:block}
+img{max-width:200%;
+    
+    display:block}
 a{text-decoration:none;color:inherit}
 ul{list-style:none}
 h1,h2,h3,h4{font-family:'Poppins',sans-serif;line-height:1.25;color:var(--blue)}
@@ -79,8 +81,8 @@ header.scrolled{
 }
 /* Estilo para a imagem da logo */
 .logo-img {
-  height: 40px; /* Ajuste conforme necessário */
-  width: auto;
+  height: 65px; /* Ajuste conforme necessário */
+  width: 80px;
   object-fit: contain;
 }
 nav ul{display:flex;align-items:center;gap:0.25rem}
