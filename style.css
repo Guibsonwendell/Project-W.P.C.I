@@ -141,6 +141,7 @@ header.scrolled {
 }
 
 .logo-img {
+  background-size: 80%;
   height: 65px;
   width: 80px;
   object-fit: contain;
